@@ -1,32 +1,72 @@
-# Keep in mind...
-- DO NOT try to change the included kernel
-- DO NOT USE any other recovery than PixelOS recovery which is included
-- YOU MUST CLEAN FLASH IF:
-    - You are coming from any other ROM or MIUI
-    - You are coming from previous Android Version
+# Prerequisites & Preparation
 
-# Clean Flash (coming from a different ROM)
-Clean flash involves formatting data which means you will be loosing data stored in the internal storage of your device, data in SD Card should not be affected. I will not be responsible for any loss of data.
-- Download ROM, vendor_boot, dtbo and boot files to your computer (click on recovery button for vendor_boot, dtbo and boot)
-- Reboot the device to bootloader (Fastboot Mode)
-- Flash the vendor_boot by running `fastboot flash vendor_boot <path/to/vendor_boot.img>` in terminal
-- Flash the dtbo by running `fastboot flash dtbo <path/to/dtbo.img>` in terminal
-- Flash the boot by running `fastboot flash boot <path/to/boot.img>` in terminal
-- Reboot to recovery by running `fastboot reboot recovery` in terminal
-- On your phone [which is in recovery mode], Apply update > Apply from ADB 
-- Flash the ROM through ADB sideload by running `adb sideload <path/to/rom.zip>` in terminal
-- Go to main menu > Factory reset > Format data/factory reset >  Format data >  Back to Main menu > Reboot to Recovery
-- Reboot and voila!
+Before you begin, ensure you have the following:
 
-# Dirty Flash / Update
-There will be no loss of data if everything goes well. Keep backups incase of any mishap. I will not be responsible for any loss of data.
-- Download ROM file to your computer
-- Reboot the device to recovery
-- On your phone [which is in recovery mode], Apply update > Apply from ADB 
-- Flash the ROM through ADB sideload by running `adb sideload <path/to/rom.zip>` in terminal
-- Reboot and voila!
+* **ADB and Fastboot** installed on your computer.
+* **USB Debugging** enabled in your phone's Developer Options.
+* **Correct Model:** Ensure your device model is exactly **RMX3360**.
+* **Stock OS Check:** Boot the device at least once to ensure all functionality works.
+* **Remove Google Accounts:** Remove all accounts in Settings to avoid "Factory Reset Protection" (FRP) locks.
+* **Back Up Data:** **This process will wipe your phone completely.** Back up everything to your PC or cloud.
 
-# Note: If sideloading rom gives error 7
-- Reboot to fastbootd by running `adb reboot fastboot` in terminal
-- Flash super_empty image by running `fastboot wipe-super <path/to/super_empty.img>`
-- Now sideload the ROM by following the steps above
+
+# 1. Unlock the Bootloader
+
+* Follow the official instructions at [Realme Bootloader Unlock Guide](https://c.realme.com/in/post-details/1587344342215921664)
+
+# 2. Flash Additional Partitions
+
+You need to flash additional files for the recovery to work. Download `dtbo.img`, `vbmeta.img`, and `vendor_boot.img` for your specific device.
+
+1. **Enter Bootloader Mode:** Power off, then hold **Volume Up + Volume Down + Power**.
+2. **Flash Files:** Run the following commands one by one (hit Enter after each):
+```bash
+fastboot flash dtbo dtbo.img
+fastboot flash vbmeta vbmeta.img
+fastboot flash vendor_boot vendor_boot.img
+```
+
+*> **Note:** If you get a "No such file" error, drag and drop the .img file into the terminal window after typing the command to auto-fill the path.*
+
+3. **Reboot to Bootloader:**
+```bash
+fastboot reboot bootloader
+```
+
+# 3. Install PixelOS Recovery
+
+1. **Download Recovery:** Download the `boot.img` provided by the PixelOS team (do not use other recoveries).
+2. **Flash Recovery:**
+```bash
+fastboot flash boot boot.img
+```
+
+3. **Enter Recovery:** Use the Volume buttons to navigate the menu on your phone to select **Recovery Mode**, then press Power to select it.
+
+# 4. Install PixelOS
+
+1. **Factory Reset:**
+* In the Recovery menu, tap **Factory Reset**.
+* Select **Format data / factory reset**.
+* Confirm the format.
+
+2. **Prepare for Sideload:**
+* Return to the main menu.
+* Select **Apply update** > **Apply from ADB**.
+
+3. **Install the ROM:**
+* On your computer, type:
+```bash
+adb -d sideload path/to/PixelOS_file.zip
+```
+
+*(Tip: You can type `adb -d sideload` and then drag the zip file into the terminal).*
+
+> **Note on Success:** The process might stop at **47%** and say `adb: failed to read command: Success` or `Undefined error: 0`. **This is normal and means the installation was successful.**
+
+# 5. Reboot System
+
+1. Once the sideload is complete, return to the main menu.
+2. Select **Reboot system now**.
+
+Your device should now boot into PixelOS!
